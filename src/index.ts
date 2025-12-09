@@ -50,8 +50,9 @@ const MYSHOPIFY_DOMAIN = argv.domain || process.env.MYSHOPIFY_DOMAIN;
 process.env.SHOPIFY_ACCESS_TOKEN = SHOPIFY_ACCESS_TOKEN;
 process.env.MYSHOPIFY_DOMAIN = MYSHOPIFY_DOMAIN;
 
-// Shopify API version - update this when upgrading to newer API versions
-const SHOPIFY_API_VERSION = "2025-01";
+// Shopify API version - can be overridden via env/CLI, defaults to 2025-01
+const SHOPIFY_API_VERSION =
+  argv.apiVersion || process.env.SHOPIFY_API_VERSION || "2025-01";
 
 // Validate required environment variables
 if (!SHOPIFY_ACCESS_TOKEN) {

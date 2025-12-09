@@ -94,7 +94,7 @@ const createProductMetafield = {
       if (data.metafieldsSet.userErrors.length > 0) {
         throw new Error(
           `Failed to create metafield: ${data.metafieldsSet.userErrors
-            .map((error) => error.message)
+            .map((error) => `${error.message} (${error.code})`)
             .join(", ")}`
         );
       }

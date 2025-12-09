@@ -89,12 +89,23 @@ const getProductMetafields = {
         }
       `;
 
-      const variables = {
+      const variables: {
+        id: string;
+        first: number;
+        namespace?: string;
+        after?: string;
+      } = {
         id: productId,
-        first: limit,
-        namespace: namespace || null,
-        after: after || null
+        first: limit
       };
+
+      if (namespace) {
+        variables.namespace = namespace;
+      }
+
+      if (after) {
+        variables.after = after;
+      }
 
       const data = (await shopifyClient.request(query, variables)) as GetProductMetafieldsResponse;
 
