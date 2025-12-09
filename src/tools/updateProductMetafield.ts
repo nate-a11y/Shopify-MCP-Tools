@@ -8,7 +8,7 @@ const UpdateProductMetafieldInputSchema = z.object({
   namespace: z.string().min(1).describe("The namespace of the metafield to update"),
   key: z.string().min(1).describe("The key of the metafield to update"),
   value: z.string().min(1).describe("The new value for the metafield"),
-  type: z.string().optional().describe("The metafield type (required if changing the type, e.g., \"single_line_text_field\", \"number_integer\", \"json\")")
+  type: z.string().optional().describe("The metafield type. Required when creating a new metafield or changing its type (e.g., \"single_line_text_field\", \"number_integer\", \"json\")")
 });
 
 type UpdateProductMetafieldInput = z.infer<typeof UpdateProductMetafieldInputSchema>;
