@@ -42,7 +42,7 @@ let shopifyClient: GraphQLClient;
  */
 const updateProductMetafield = {
   name: "update-product-metafield",
-  description: "Update an existing metafield on a product by namespace and key. The metafield must already exist.",
+  description: "Update a metafield on a product by namespace and key. Creates the metafield if it doesn't exist (upsert behavior).",
   schema: UpdateProductMetafieldInputSchema,
 
   initialize(client: GraphQLClient) {
