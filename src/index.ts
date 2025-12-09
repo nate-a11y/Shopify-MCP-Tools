@@ -63,8 +63,13 @@ import { createFile } from "./tools/createFile.js";
 import { createUrlRedirect } from "./tools/createUrlRedirect.js";
 
 // Import menu tools
+import { getMenus } from "./tools/getMenus.js";
 import { createMenu } from "./tools/createMenu.js";
 import { updateMenu } from "./tools/updateMenu.js";
+import { deleteMenu } from "./tools/deleteMenu.js";
+
+// Import theme tools
+import { getThemes } from "./tools/getThemes.js";
 
 // Import translation tools
 import { registerTranslations } from "./tools/registerTranslations.js";
@@ -170,8 +175,13 @@ createFile.initialize(shopifyClient);
 createUrlRedirect.initialize(shopifyClient);
 
 // Initialize menu tools
+getMenus.initialize(shopifyClient);
 createMenu.initialize(shopifyClient);
 updateMenu.initialize(shopifyClient);
+deleteMenu.initialize(shopifyClient);
+
+// Initialize theme tools
+getThemes.initialize(shopifyClient);
 
 // Initialize translation tools
 registerTranslations.initialize(shopifyClient);
@@ -669,6 +679,17 @@ server.tool(
 
 // Add menu tools
 server.tool(
+  "get-menus",
+  getMenus.schema.shape,
+  async (args: z.infer<typeof getMenus.schema>) => {
+    const result = await getMenus.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
   "create-menu",
   createMenu.schema.shape,
   async (args: z.infer<typeof createMenu.schema>) => {
@@ -684,6 +705,29 @@ server.tool(
   updateMenu.schema.shape,
   async (args: z.infer<typeof updateMenu.schema>) => {
     const result = await updateMenu.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
+  "delete-menu",
+  deleteMenu.schema.shape,
+  async (args: z.infer<typeof deleteMenu.schema>) => {
+    const result = await deleteMenu.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+// Add theme tools
+server.tool(
+  "get-themes",
+  getThemes.schema.shape,
+  async (args: z.infer<typeof getThemes.schema>) => {
+    const result = await getThemes.execute(args);
     return {
       content: [{ type: "text", text: JSON.stringify(result) }]
     };
