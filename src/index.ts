@@ -30,6 +30,12 @@ import { createProductMetafield } from "./tools/createProductMetafield.js";
 import { updateProductMetafield } from "./tools/updateProductMetafield.js";
 import { deleteProductMetafield } from "./tools/deleteProductMetafield.js";
 
+// Import metafield definition tools
+import { getMetafieldDefinitions } from "./tools/getMetafieldDefinitions.js";
+import { createMetafieldDefinition } from "./tools/createMetafieldDefinition.js";
+import { updateMetafieldDefinition } from "./tools/updateMetafieldDefinition.js";
+import { deleteMetafieldDefinition } from "./tools/deleteMetafieldDefinition.js";
+
 // Import metaobject tools
 import { getMetaobjects } from "./tools/getMetaobjects.js";
 import { createMetaobject } from "./tools/createMetaobject.js";
@@ -130,6 +136,12 @@ getProductMetafields.initialize(shopifyClient);
 createProductMetafield.initialize(shopifyClient);
 updateProductMetafield.initialize(shopifyClient);
 deleteProductMetafield.initialize(shopifyClient);
+
+// Initialize metafield definition tools
+getMetafieldDefinitions.initialize(shopifyClient);
+createMetafieldDefinition.initialize(shopifyClient);
+updateMetafieldDefinition.initialize(shopifyClient);
+deleteMetafieldDefinition.initialize(shopifyClient);
 
 // Initialize metaobject tools
 getMetaobjects.initialize(shopifyClient);
@@ -465,6 +477,51 @@ server.tool(
   deleteProductMetafield.schema.shape,
   async (args: z.infer<typeof deleteProductMetafield.schema>) => {
     const result = await deleteProductMetafield.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+// Add metafield definition tools
+server.tool(
+  "get-metafield-definitions",
+  getMetafieldDefinitions.schema.shape,
+  async (args: z.infer<typeof getMetafieldDefinitions.schema>) => {
+    const result = await getMetafieldDefinitions.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
+  "create-metafield-definition",
+  createMetafieldDefinition.schema.shape,
+  async (args: z.infer<typeof createMetafieldDefinition.schema>) => {
+    const result = await createMetafieldDefinition.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
+  "update-metafield-definition",
+  updateMetafieldDefinition.schema.shape,
+  async (args: z.infer<typeof updateMetafieldDefinition.schema>) => {
+    const result = await updateMetafieldDefinition.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
+  "delete-metafield-definition",
+  deleteMetafieldDefinition.schema.shape,
+  async (args: z.infer<typeof deleteMetafieldDefinition.schema>) => {
+    const result = await deleteMetafieldDefinition.execute(args);
     return {
       content: [{ type: "text", text: JSON.stringify(result) }]
     };

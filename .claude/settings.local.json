@@ -6,7 +6,10 @@
       "Bash(npx tsc:*)",
       "Bash(npx rimraf dist)",
       "Bash(cat:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Add 12 new Shopify MCP tools\n\nCore mutations:\n- create-metaobject-definition: Create metaobject schemas\n- update-metaobject-definition: Modify existing definitions\n- delete-metaobject: Remove metaobject entries\n- create-product: Create new products with variants\n- delete-product: Remove products\n- create-collection: Create manual/smart collections\n- adjust-inventory: Update stock levels\n\nNice-to-have:\n- create-file: Upload images/videos/documents\n- create-url-redirect: SEO redirects\n- create-menu: Navigation menus\n- update-menu: Modify menus\n- register-translations: Multi-language support\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
