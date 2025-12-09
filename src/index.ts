@@ -24,6 +24,17 @@ import { getArticleById } from "./tools/getArticleById.js";
 import { searchShopify } from "./tools/searchShopify.js";
 import { createArticle } from "./tools/createArticle.js";
 
+// Import metafield tools
+import { getProductMetafields } from "./tools/getProductMetafields.js";
+import { createProductMetafield } from "./tools/createProductMetafield.js";
+import { updateProductMetafield } from "./tools/updateProductMetafield.js";
+import { deleteProductMetafield } from "./tools/deleteProductMetafield.js";
+
+// Import metaobject tools
+import { getMetaobjects } from "./tools/getMetaobjects.js";
+import { createMetaobject } from "./tools/createMetaobject.js";
+import { updateMetaobject } from "./tools/updateMetaobject.js";
+
 // Parse command line arguments
 const argv = minimist(process.argv.slice(2));
 
@@ -81,6 +92,17 @@ getBlogById.initialize(shopifyClient);
 getArticleById.initialize(shopifyClient);
 searchShopify.initialize(shopifyClient);
 createArticle.initialize(shopifyClient);
+
+// Initialize metafield tools
+getProductMetafields.initialize(shopifyClient);
+createProductMetafield.initialize(shopifyClient);
+updateProductMetafield.initialize(shopifyClient);
+deleteProductMetafield.initialize(shopifyClient);
+
+// Initialize metaobject tools
+getMetaobjects.initialize(shopifyClient);
+createMetaobject.initialize(shopifyClient);
+updateMetaobject.initialize(shopifyClient);
 
 // Set up MCP server
 const server = new McpServer({
@@ -338,6 +360,85 @@ server.tool(
   },
   async (args) => {
     const result = await updateProduct.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+// Add metafield tools
+server.tool(
+  "get-product-metafields",
+  getProductMetafields.schema.shape,
+  async (args: z.infer<typeof getProductMetafields.schema>) => {
+    const result = await getProductMetafields.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
+  "create-product-metafield",
+  createProductMetafield.schema.shape,
+  async (args: z.infer<typeof createProductMetafield.schema>) => {
+    const result = await createProductMetafield.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
+  "update-product-metafield",
+  updateProductMetafield.schema.shape,
+  async (args: z.infer<typeof updateProductMetafield.schema>) => {
+    const result = await updateProductMetafield.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
+  "delete-product-metafield",
+  deleteProductMetafield.schema.shape,
+  async (args: z.infer<typeof deleteProductMetafield.schema>) => {
+    const result = await deleteProductMetafield.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+// Add metaobject tools
+server.tool(
+  "get-metaobjects",
+  getMetaobjects.schema.shape,
+  async (args: z.infer<typeof getMetaobjects.schema>) => {
+    const result = await getMetaobjects.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
+  "create-metaobject",
+  createMetaobject.schema.shape,
+  async (args: z.infer<typeof createMetaobject.schema>) => {
+    const result = await createMetaobject.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
+  "update-metaobject",
+  updateMetaobject.schema.shape,
+  async (args: z.infer<typeof updateMetaobject.schema>) => {
+    const result = await updateMetaobject.execute(args);
     return {
       content: [{ type: "text", text: JSON.stringify(result) }]
     };
