@@ -5,7 +5,7 @@ import { z } from "zod";
 // Input schema for getMetaobjects
 const GetMetaobjectsInputSchema = z.object({
   type: z.string().min(1).describe("The metaobject type to fetch (e.g., \"custom_type\", \"lookbook\"). This is the type handle defined in your Shopify admin."),
-  limit: z.number().default(20).describe("Maximum number of metaobjects to return (default: 20)"),
+  limit: z.number().min(1).max(250).default(20).describe("Maximum number of metaobjects to return (default: 20, max: 250)"),
   after: z.string().optional().describe("Cursor for pagination - fetch items after this cursor"),
   reverse: z.boolean().default(false).describe("Reverse the order of results")
 });
@@ -59,6 +59,9 @@ const getMetaobjects = {
   },
 
   execute: async (input: GetMetaobjectsInput) => {
+    if (!shopifyClient) {
+      throw new Error("GraphQL client not initialized. Call initialize() first.");
+    }
     try {
       const { type, limit, after, reverse } = input;
 
@@ -125,7 +128,7 @@ const getMetaobjects = {
       return {
         metaobjects,
         pageInfo: data.metaobjects.pageInfo,
-        totalCount: metaobjects.length
+        count: metaobjects.length
       };
     } catch (error) {
       console.error("Error fetching metaobjects:", error);

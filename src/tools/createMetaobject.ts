@@ -58,6 +58,9 @@ const createMetaobject = {
   },
 
   execute: async (input: CreateMetaobjectInput) => {
+    if (!shopifyClient) {
+      throw new Error("GraphQL client not initialized. Call initialize() first.");
+    }
     try {
       const { type, handle, fields, capabilities } = input;
 

@@ -49,6 +49,9 @@ const createProductMetafield = {
   },
 
   execute: async (input: CreateProductMetafieldInput) => {
+    if (!shopifyClient) {
+      throw new Error("GraphQL client not initialized. Call initialize() first.");
+    }
     try {
       const { productId, namespace, key, value, type } = input;
 

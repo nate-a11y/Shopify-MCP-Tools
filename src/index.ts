@@ -50,6 +50,9 @@ const MYSHOPIFY_DOMAIN = argv.domain || process.env.MYSHOPIFY_DOMAIN;
 process.env.SHOPIFY_ACCESS_TOKEN = SHOPIFY_ACCESS_TOKEN;
 process.env.MYSHOPIFY_DOMAIN = MYSHOPIFY_DOMAIN;
 
+// Shopify API version - update this when upgrading to newer API versions
+const SHOPIFY_API_VERSION = "2025-01";
+
 // Validate required environment variables
 if (!SHOPIFY_ACCESS_TOKEN) {
   console.error("Error: SHOPIFY_ACCESS_TOKEN is required.");
@@ -67,7 +70,7 @@ if (!MYSHOPIFY_DOMAIN) {
 
 // Create Shopify GraphQL client
 const shopifyClient = new GraphQLClient(
-  `https://${MYSHOPIFY_DOMAIN}/admin/api/2025-01/graphql.json`,
+  `https://${MYSHOPIFY_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}/graphql.json`,
   {
     headers: {
       "X-Shopify-Access-Token": SHOPIFY_ACCESS_TOKEN,

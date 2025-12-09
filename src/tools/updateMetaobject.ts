@@ -58,6 +58,9 @@ const updateMetaobject = {
   },
 
   execute: async (input: UpdateMetaobjectInput) => {
+    if (!shopifyClient) {
+      throw new Error("GraphQL client not initialized. Call initialize() first.");
+    }
     try {
       const { id, handle, fields, capabilities } = input;
 
@@ -103,7 +106,7 @@ const updateMetaobject = {
         metaobjectInput.fields = fields;
       }
 
-      if (capabilities) {
+      if (capabilities && Object.keys(capabilities).length > 0) {
         metaobjectInput.capabilities = capabilities;
       }
 

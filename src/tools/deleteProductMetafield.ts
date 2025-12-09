@@ -36,6 +36,9 @@ const deleteProductMetafield = {
   },
 
   execute: async (input: DeleteProductMetafieldInput) => {
+    if (!shopifyClient) {
+      throw new Error("GraphQL client not initialized. Call initialize() first.");
+    }
     try {
       const { metafieldId } = input;
 

@@ -50,6 +50,9 @@ const updateProductMetafield = {
   },
 
   execute: async (input: UpdateProductMetafieldInput) => {
+    if (!shopifyClient) {
+      throw new Error("GraphQL client not initialized. Call initialize() first.");
+    }
     try {
       const { productId, namespace, key, value, type } = input;
 
@@ -102,7 +105,7 @@ const updateProductMetafield = {
       if (data.metafieldsSet.userErrors.length > 0) {
         throw new Error(
           `Failed to update metafield: ${data.metafieldsSet.userErrors
-            .map((error) => error.message)
+            .map((error) => `${error.message} (${error.code})`)
             .join(", ")}`
         );
       }

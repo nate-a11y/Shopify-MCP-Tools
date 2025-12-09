@@ -6,7 +6,8 @@ import { z } from "zod";
 const GetProductMetafieldsInputSchema = z.object({
   productId: z.string().min(1).describe("The GID of the product (e.g., \"gid://shopify/Product/1234567890\")"),
   namespace: z.string().optional().describe("Filter metafields by namespace"),
-  limit: z.number().default(20).describe("Maximum number of metafields to return (default: 20)")
+  limit: z.number().min(1).max(250).default(20).describe("Maximum number of metafields to return (default: 20, max: 250)"),
+  after: z.string().optional().describe("Cursor for pagination - fetch metafields after this cursor")
 });
 
 type GetProductMetafieldsInput = z.infer<typeof GetProductMetafieldsInputSchema>;
@@ -55,15 +56,18 @@ const getProductMetafields = {
   },
 
   execute: async (input: GetProductMetafieldsInput) => {
+    if (!shopifyClient) {
+      throw new Error("GraphQL client not initialized. Call initialize() first.");
+    }
     try {
-      const { productId, namespace, limit } = input;
+      const { productId, namespace, limit, after } = input;
 
       const query = gql`
-        query GetProductMetafields($id: ID!, $first: Int!, $namespace: String) {
+        query GetProductMetafields($id: ID!, $first: Int!, $namespace: String, $after: String) {
           product(id: $id) {
             id
             title
-            metafields(first: $first, namespace: $namespace) {
+            metafields(first: $first, namespace: $namespace, after: $after) {
               edges {
                 node {
                   id
@@ -88,7 +92,8 @@ const getProductMetafields = {
       const variables = {
         id: productId,
         first: limit,
-        namespace: namespace || null
+        namespace: namespace || null,
+        after: after || null
       };
 
       const data = (await shopifyClient.request(query, variables)) as GetProductMetafieldsResponse;
