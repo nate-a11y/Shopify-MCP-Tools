@@ -43,8 +43,10 @@ import { updateMetaobject } from "./tools/updateMetaobject.js";
 import { deleteMetaobject } from "./tools/deleteMetaobject.js";
 
 // Import metaobject definition tools
+import { getMetaobjectDefinitions } from "./tools/getMetaobjectDefinitions.js";
 import { createMetaobjectDefinition } from "./tools/createMetaobjectDefinition.js";
 import { updateMetaobjectDefinition } from "./tools/updateMetaobjectDefinition.js";
+import { deleteMetaobjectDefinition } from "./tools/deleteMetaobjectDefinition.js";
 
 // Import product management tools
 import { createProduct } from "./tools/createProduct.js";
@@ -155,8 +157,10 @@ updateMetaobject.initialize(shopifyClient);
 deleteMetaobject.initialize(shopifyClient);
 
 // Initialize metaobject definition tools
+getMetaobjectDefinitions.initialize(shopifyClient);
 createMetaobjectDefinition.initialize(shopifyClient);
 updateMetaobjectDefinition.initialize(shopifyClient);
+deleteMetaobjectDefinition.initialize(shopifyClient);
 
 // Initialize product management tools
 createProduct.initialize(shopifyClient);
@@ -585,6 +589,17 @@ server.tool(
 
 // Add metaobject definition tools
 server.tool(
+  "get-metaobject-definitions",
+  getMetaobjectDefinitions.schema.shape,
+  async (args: z.infer<typeof getMetaobjectDefinitions.schema>) => {
+    const result = await getMetaobjectDefinitions.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
   "create-metaobject-definition",
   createMetaobjectDefinition.schema.shape,
   async (args: z.infer<typeof createMetaobjectDefinition.schema>) => {
@@ -600,6 +615,17 @@ server.tool(
   updateMetaobjectDefinition.schema.shape,
   async (args: z.infer<typeof updateMetaobjectDefinition.schema>) => {
     const result = await updateMetaobjectDefinition.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
+  "delete-metaobject-definition",
+  deleteMetaobjectDefinition.schema.shape,
+  async (args: z.infer<typeof deleteMetaobjectDefinition.schema>) => {
+    const result = await deleteMetaobjectDefinition.execute(args);
     return {
       content: [{ type: "text", text: JSON.stringify(result) }]
     };
