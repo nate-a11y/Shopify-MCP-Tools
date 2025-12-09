@@ -34,6 +34,34 @@ import { deleteProductMetafield } from "./tools/deleteProductMetafield.js";
 import { getMetaobjects } from "./tools/getMetaobjects.js";
 import { createMetaobject } from "./tools/createMetaobject.js";
 import { updateMetaobject } from "./tools/updateMetaobject.js";
+import { deleteMetaobject } from "./tools/deleteMetaobject.js";
+
+// Import metaobject definition tools
+import { createMetaobjectDefinition } from "./tools/createMetaobjectDefinition.js";
+import { updateMetaobjectDefinition } from "./tools/updateMetaobjectDefinition.js";
+
+// Import product management tools
+import { createProduct } from "./tools/createProduct.js";
+import { deleteProduct } from "./tools/deleteProduct.js";
+
+// Import collection tools
+import { createCollection } from "./tools/createCollection.js";
+
+// Import inventory tools
+import { adjustInventory } from "./tools/adjustInventory.js";
+
+// Import file tools
+import { createFile } from "./tools/createFile.js";
+
+// Import URL redirect tools
+import { createUrlRedirect } from "./tools/createUrlRedirect.js";
+
+// Import menu tools
+import { createMenu } from "./tools/createMenu.js";
+import { updateMenu } from "./tools/updateMenu.js";
+
+// Import translation tools
+import { registerTranslations } from "./tools/registerTranslations.js";
 
 // Parse command line arguments
 const argv = minimist(process.argv.slice(2));
@@ -107,6 +135,34 @@ deleteProductMetafield.initialize(shopifyClient);
 getMetaobjects.initialize(shopifyClient);
 createMetaobject.initialize(shopifyClient);
 updateMetaobject.initialize(shopifyClient);
+deleteMetaobject.initialize(shopifyClient);
+
+// Initialize metaobject definition tools
+createMetaobjectDefinition.initialize(shopifyClient);
+updateMetaobjectDefinition.initialize(shopifyClient);
+
+// Initialize product management tools
+createProduct.initialize(shopifyClient);
+deleteProduct.initialize(shopifyClient);
+
+// Initialize collection tools
+createCollection.initialize(shopifyClient);
+
+// Initialize inventory tools
+adjustInventory.initialize(shopifyClient);
+
+// Initialize file tools
+createFile.initialize(shopifyClient);
+
+// Initialize URL redirect tools
+createUrlRedirect.initialize(shopifyClient);
+
+// Initialize menu tools
+createMenu.initialize(shopifyClient);
+updateMenu.initialize(shopifyClient);
+
+// Initialize translation tools
+registerTranslations.initialize(shopifyClient);
 
 // Set up MCP server
 const server = new McpServer({
@@ -443,6 +499,146 @@ server.tool(
   updateMetaobject.schema.shape,
   async (args: z.infer<typeof updateMetaobject.schema>) => {
     const result = await updateMetaobject.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
+  "delete-metaobject",
+  deleteMetaobject.schema.shape,
+  async (args: z.infer<typeof deleteMetaobject.schema>) => {
+    const result = await deleteMetaobject.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+// Add metaobject definition tools
+server.tool(
+  "create-metaobject-definition",
+  createMetaobjectDefinition.schema.shape,
+  async (args: z.infer<typeof createMetaobjectDefinition.schema>) => {
+    const result = await createMetaobjectDefinition.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
+  "update-metaobject-definition",
+  updateMetaobjectDefinition.schema.shape,
+  async (args: z.infer<typeof updateMetaobjectDefinition.schema>) => {
+    const result = await updateMetaobjectDefinition.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+// Add product management tools
+server.tool(
+  "create-product",
+  createProduct.schema.shape,
+  async (args: z.infer<typeof createProduct.schema>) => {
+    const result = await createProduct.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
+  "delete-product",
+  deleteProduct.schema.shape,
+  async (args: z.infer<typeof deleteProduct.schema>) => {
+    const result = await deleteProduct.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+// Add collection tools
+server.tool(
+  "create-collection",
+  createCollection.schema.shape,
+  async (args: z.infer<typeof createCollection.schema>) => {
+    const result = await createCollection.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+// Add inventory tools
+server.tool(
+  "adjust-inventory",
+  adjustInventory.schema.shape,
+  async (args: z.infer<typeof adjustInventory.schema>) => {
+    const result = await adjustInventory.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+// Add file tools
+server.tool(
+  "create-file",
+  createFile.schema.shape,
+  async (args: z.infer<typeof createFile.schema>) => {
+    const result = await createFile.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+// Add URL redirect tools
+server.tool(
+  "create-url-redirect",
+  createUrlRedirect.schema.shape,
+  async (args: z.infer<typeof createUrlRedirect.schema>) => {
+    const result = await createUrlRedirect.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+// Add menu tools
+server.tool(
+  "create-menu",
+  createMenu.schema.shape,
+  async (args: z.infer<typeof createMenu.schema>) => {
+    const result = await createMenu.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+server.tool(
+  "update-menu",
+  updateMenu.schema.shape,
+  async (args: z.infer<typeof updateMenu.schema>) => {
+    const result = await updateMenu.execute(args);
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }]
+    };
+  }
+);
+
+// Add translation tools
+server.tool(
+  "register-translations",
+  registerTranslations.schema.shape,
+  async (args: z.infer<typeof registerTranslations.schema>) => {
+    const result = await registerTranslations.execute(args);
     return {
       content: [{ type: "text", text: JSON.stringify(result) }]
     };

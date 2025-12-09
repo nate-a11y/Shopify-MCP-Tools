@@ -11,11 +11,17 @@ MCP Server for Shopify API, enabling interaction with store data through GraphQL
 
 ## Features
 
-- **Product Management**: Search, retrieve, and update product information, including SEO-optimized content
-- **Customer Management**: Load customer data and manage customer tags
-- **Order Management**: Advanced order querying and filtering
-- **Blog Management**: Create, retrieve, and update blogs with custom templates and comment policies
-- **Article Management**: Create and manage blog articles with rich content, author information, and SEO metadata
+- **Product Management**: Create, search, retrieve, update, and delete products with full variant support
+- **Collection Management**: Create and manage collections (smart and manual) with rule-based automation
+- **Inventory Management**: Adjust stock levels with detailed reason tracking
+- **Metaobject Management**: Full CRUD operations for custom metaobject definitions and entries
+- **Metafield Management**: Create, update, and delete product metafields
+- **Blog & Article Management**: Create and manage blogs with articles, comments, and SEO metadata
+- **Page Management**: Manage online store pages with SEO optimization
+- **File Management**: Upload images, videos, and documents to Shopify's file storage
+- **Navigation Management**: Create and update store navigation menus
+- **URL Redirects**: Create SEO-friendly URL redirects
+- **Multi-language Support**: Register translations for any resource
 - **Store Search**: Unified search across products, articles, blogs, and pages
 - **GraphQL Integration**: Direct integration with Shopify's GraphQL Admin API
 - **Comprehensive Error Handling**: Clear error messages for API and authentication issues
@@ -749,3 +755,270 @@ Error responses include:
    - Token expiration
    - IP restrictions
    - App permissions
+
+### Product Creation & Deletion
+
+1. `create-product`
+   - Create a new product in the Shopify store
+   - Inputs:
+     - `title` (string, required): The title/name of the product
+     - `descriptionHtml` (optional string): HTML description of the product
+     - `vendor` (optional string): Product vendor/manufacturer
+     - `productType` (optional string): Category or type
+     - `tags` (optional array): Tags for categorization
+     - `status` (optional): "ACTIVE", "ARCHIVED", or "DRAFT"
+     - `seo` (optional object): SEO title and description
+     - `options` (optional array): Option names like ["Size", "Color"]
+     - `variants` (optional array): Product variants with pricing
+   - Example:
+     ```javascript
+     {
+       "title": "Awesome T-Shirt",
+       "descriptionHtml": "<p>A comfortable cotton t-shirt</p>",
+       "vendor": "Fashion Co",
+       "status": "DRAFT",
+       "variants": [
+         { "price": "29.99", "sku": "TSHIRT-001" }
+       ]
+     }
+     ```
+
+2. `delete-product`
+   - Permanently delete a product and all its variants
+   - Inputs:
+     - `productId` (string, required): The GID of the product to delete
+   - ⚠️ This action cannot be undone
+
+### Collection Creation
+
+1. `create-collection`
+   - Create manual or smart collections
+   - Inputs:
+     - `title` (string, required): Collection title
+     - `descriptionHtml` (optional string): HTML description
+     - `handle` (optional string): URL handle
+     - `seo` (optional object): SEO settings
+     - `sortOrder` (optional): Product sorting method
+     - `ruleSet` (optional object): Rules for smart collections
+     - `products` (optional array): Product GIDs for manual collections
+   - Example - Smart Collection:
+     ```javascript
+     {
+       "title": "Summer Sale",
+       "ruleSet": {
+         "appliedDisjunctively": false,
+         "rules": [
+           { "column": "TAG", "relation": "EQUALS", "condition": "summer" },
+           { "column": "VARIANT_PRICE", "relation": "LESS_THAN", "condition": "50" }
+         ]
+       }
+     }
+     ```
+
+### Inventory Management
+
+1. `adjust-inventory`
+   - Adjust inventory quantities at specific locations
+   - Inputs:
+     - `reason` (string, required): Reason for adjustment (e.g., "CORRECTION", "RECEIVED", "DAMAGED")
+     - `name` (string, required): Reference name for this adjustment
+     - `changes` (array, required): Array of inventory changes
+       - `inventoryItemId`: GID of the inventory item
+       - `locationId`: GID of the location
+       - `delta`: Quantity change (positive to add, negative to subtract)
+   - Example:
+     ```javascript
+     {
+       "reason": "RECEIVED",
+       "name": "Weekly shipment",
+       "changes": [
+         {
+           "inventoryItemId": "gid://shopify/InventoryItem/123",
+           "locationId": "gid://shopify/Location/456",
+           "delta": 50
+         }
+       ]
+     }
+     ```
+
+### Metaobject Definition Management
+
+1. `create-metaobject-definition`
+   - Create new metaobject type definitions
+   - Inputs:
+     - `type` (string, required): Type identifier (e.g., "author", "faq")
+     - `name` (optional string): Display name
+     - `description` (optional string): Description
+     - `fieldDefinitions` (array, required): Field definitions with key, type, validation
+     - `access` (optional object): Storefront access settings
+     - `capabilities` (optional object): Publishable/translatable settings
+   - Example:
+     ```javascript
+     {
+       "type": "author",
+       "name": "Author",
+       "fieldDefinitions": [
+         { "key": "name", "type": "single_line_text_field", "required": true },
+         { "key": "bio", "type": "multi_line_text_field" },
+         { "key": "avatar", "type": "file_reference" }
+       ],
+       "displayNameKey": "name"
+     }
+     ```
+
+2. `update-metaobject-definition`
+   - Update existing metaobject definitions
+   - Inputs:
+     - `id` (string, required): GID of the definition
+     - `fieldDefinitionsToUpdate` (optional array): Fields to update
+     - `fieldDefinitionsToCreate` (optional array): New fields to add
+     - `fieldDefinitionsToDelete` (optional array): Field keys to remove
+
+3. `delete-metaobject`
+   - Delete a metaobject entry
+   - Inputs:
+     - `id` (string, required): GID of the metaobject to delete
+
+### File Management
+
+1. `create-file`
+   - Upload files to Shopify's storage
+   - Inputs:
+     - `files` (array, required): Array of files to upload
+       - `originalSource` (string, required): Public URL of the file
+       - `alt` (optional string): Alt text for images
+       - `contentType` (optional): "FILE", "IMAGE", or "VIDEO"
+       - `filename` (optional string): Custom filename
+   - Example:
+     ```javascript
+     {
+       "files": [
+         {
+           "originalSource": "https://example.com/image.jpg",
+           "alt": "Product hero image",
+           "contentType": "IMAGE"
+         }
+       ]
+     }
+     ```
+
+### URL Redirect Management
+
+1. `create-url-redirect`
+   - Create SEO-friendly URL redirects
+   - Inputs:
+     - `path` (string, required): Old path to redirect from
+     - `target` (string, required): New path or URL to redirect to
+   - Example:
+     ```javascript
+     {
+       "path": "/old-product-page",
+       "target": "/collections/new-collection"
+     }
+     ```
+
+### Navigation Menu Management
+
+1. `create-menu`
+   - Create new navigation menus
+   - Inputs:
+     - `title` (string, required): Menu title
+     - `handle` (string, required): URL handle
+     - `items` (optional array): Menu items with title, url/resourceId, and nested items
+   - Example:
+     ```javascript
+     {
+       "title": "Main Menu",
+       "handle": "main-menu",
+       "items": [
+         { "title": "Home", "url": "/" },
+         { "title": "Shop", "resourceId": "gid://shopify/Collection/123" },
+         {
+           "title": "About",
+           "url": "/pages/about",
+           "items": [
+             { "title": "Our Story", "url": "/pages/our-story" }
+           ]
+         }
+       ]
+     }
+     ```
+
+2. `update-menu`
+   - Update existing navigation menus
+   - Inputs:
+     - `id` (string, required): GID of the menu
+     - `title` (optional string): New title
+     - `handle` (optional string): New handle
+     - `itemsToUpdate` (optional array): Existing items to modify
+     - `itemsToAdd` (optional array): New items to add
+     - `itemsToRemove` (optional array): Item GIDs to remove
+
+### Translation Management
+
+1. `register-translations`
+   - Register translations for resources
+   - Inputs:
+     - `resourceId` (string, required): GID of the resource to translate
+     - `locale` (string, required): Locale code (e.g., "fr", "es", "ja")
+     - `translations` (array, required): Translation entries
+       - `key`: Field to translate (e.g., "title", "body_html")
+       - `value`: Translated value
+       - `translatableContentDigest`: Digest of original content
+   - Note: Get `translatableContentDigest` from the `translatableResource` query first
+
+### Metafield Management
+
+1. `get-product-metafields`
+   - Retrieve metafields for a product
+   - Inputs:
+     - `productId` (string, required): Product GID
+     - `namespace` (optional string): Filter by namespace
+
+2. `create-product-metafield`
+   - Create a new product metafield
+   - Inputs:
+     - `productId` (string, required): Product GID
+     - `namespace` (string, required): Metafield namespace
+     - `key` (string, required): Metafield key
+     - `value` (string, required): Metafield value
+     - `type` (string, required): Metafield type
+
+3. `update-product-metafield`
+   - Update an existing product metafield (upsert behavior)
+   - Inputs:
+     - `productId` (string, required): Product GID
+     - `namespace` (string, required): Metafield namespace
+     - `key` (string, required): Metafield key
+     - `value` (string, required): New value
+     - `type` (string, required): Metafield type
+
+4. `delete-product-metafield`
+   - Delete a product metafield
+   - Inputs:
+     - `metafieldId` (string, required): Metafield GID
+
+### Metaobject Management
+
+1. `get-metaobjects`
+   - Retrieve metaobjects by type
+   - Inputs:
+     - `type` (string, required): Metaobject type
+     - `first` (optional number): Limit results
+     - `after` (optional string): Pagination cursor
+
+2. `create-metaobject`
+   - Create a new metaobject entry
+   - Inputs:
+     - `type` (string, required): Metaobject type
+     - `handle` (optional string): Custom handle
+     - `fields` (array, required): Field values
+     - `capabilities` (optional object): Publish status
+
+3. `update-metaobject`
+   - Update an existing metaobject
+   - Inputs:
+     - `id` (string, required): Metaobject GID
+     - `handle` (optional string): New handle
+     - `fields` (optional array): Fields to update
+     - `capabilities` (optional object): Publish status
