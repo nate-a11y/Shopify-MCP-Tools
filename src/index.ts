@@ -282,18 +282,8 @@ server.tool(
 // Add the updatePage tool
 server.tool(
   "update-page",
-  {
-    pageId: z.string().min(1).describe("The GID of the page to update (e.g., \"gid://shopify/Page/1234567890\")"),
-    title: z.string().optional(),
-    body: z.string().optional(),
-    bodyHtml: z.string().optional(),
-    seo: z.object({
-      title: z.string().optional(),
-      description: z.string().optional()
-    }).optional(),
-    published: z.boolean().optional()
-  },
-  async (args) => {
+  updatePage.schema.shape,
+  async (args: z.infer<typeof updatePage.schema>) => {
     const result = await updatePage.execute(args);
     return {
       content: [{ type: "text", text: JSON.stringify(result) }]

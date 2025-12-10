@@ -6,13 +6,8 @@ import { z } from "zod";
 const UpdatePageInputSchema = z.object({
   pageId: z.string().min(1).describe("The GID of the page to update (e.g., \"gid://shopify/Page/1234567890\")"),
   title: z.string().optional().describe("The new title for the page"),
-  body: z.string().optional().describe("The new body content for the page"),
-  bodyHtml: z.string().optional().describe("The new HTML body content for the page"),
-  seo: z.object({
-    title: z.string().optional(),
-    description: z.string().optional()
-  }).optional().describe("SEO information for the page"),
-  published: z.boolean().optional().describe("Whether the page should be published or unpublished")
+  body: z.string().optional().describe("The new HTML body content for the page"),
+  isPublished: z.boolean().optional().describe("Whether the page should be published or unpublished")
 });
 
 type UpdatePageInput = z.infer<typeof UpdatePageInputSchema>;
@@ -26,7 +21,7 @@ let shopifyClient: GraphQLClient;
  */
 const updatePage = {
   name: "update-page",
-  description: "Updates a page's details including title, content, SEO information, and publish status",
+  description: "Updates a page's details including title, body content, and publish status",
   schema: UpdatePageInputSchema,
 
   initialize(client: GraphQLClient) {
@@ -35,24 +30,20 @@ const updatePage = {
 
   execute: async (input: UpdatePageInput) => {
     try {
-      const { pageId, ...updateData } = input;
+      const { pageId, title, body, isPublished } = input;
 
       const mutation = gql`
-        mutation pageUpdate($input: PageInput!) {
-          pageUpdate(input: $input) {
+        mutation pageUpdate($id: ID!, $page: PageUpdateInput!) {
+          pageUpdate(id: $id, page: $page) {
             page {
               id
               title
               handle
-              bodySummary
               body
-              bodyHtml
+              bodySummary
               updatedAt
               publishedAt
-              seo {
-                title
-                description
-              }
+              createdAt
             }
             userErrors {
               field
@@ -62,11 +53,28 @@ const updatePage = {
         }
       `;
 
+      // Build the page input object
+      const pageInput: {
+        title?: string;
+        body?: string;
+        isPublished?: boolean;
+      } = {};
+
+      if (title !== undefined) {
+        pageInput.title = title;
+      }
+
+      if (body !== undefined) {
+        pageInput.body = body;
+      }
+
+      if (isPublished !== undefined) {
+        pageInput.isPublished = isPublished;
+      }
+
       const variables = {
-        input: {
-          id: pageId,
-          ...updateData
-        }
+        id: pageId,
+        page: pageInput
       };
 
       const data = await shopifyClient.request(mutation, variables) as {
@@ -75,18 +83,14 @@ const updatePage = {
             id: string;
             title: string;
             handle: string;
-            bodySummary: string;
             body: string;
-            bodyHtml: string;
+            bodySummary: string;
             updatedAt: string;
-            publishedAt: string;
-            seo: {
-              title: string;
-              description: string;
-            };
-          };
+            publishedAt: string | null;
+            createdAt: string;
+          } | null;
           userErrors: Array<{
-            field: string;
+            field: string[];
             message: string;
           }>;
         };
@@ -100,7 +104,12 @@ const updatePage = {
         );
       }
 
+      if (!data.pageUpdate.page) {
+        throw new Error("Page update failed: No page returned");
+      }
+
       return {
+        success: true,
         page: data.pageUpdate.page
       };
     } catch (error) {
@@ -114,4 +123,4 @@ const updatePage = {
   }
 };
 
-export { updatePage }; 
+export { updatePage };
